@@ -19,7 +19,7 @@ In this lab, you will:
 * Create a migration project
 * Define the source and target for your migration
 * Perform the migration
-* Verify the Migration
+* Verify the migration
 
 ## Notes
 

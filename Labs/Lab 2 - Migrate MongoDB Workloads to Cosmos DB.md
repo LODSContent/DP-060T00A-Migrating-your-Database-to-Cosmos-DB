@@ -237,10 +237,10 @@ You have now created a MongoDB server and database. The next step is to demonstr
     git clone https://github.com/MicrosoftLearning/DP-160T00A-Migrating-your-Database-to-Cosmos-DB migration-workshop-apps
     ```
 
-1. Move to the **DP160T00A-Migrating-your-Database-to-Cosmos-DB/MongoDeviceDataCapture/MongoDeviceCapture** folder:
+1. Move to the **migration-workshop-apps/MongoDeviceDataCapture/MongoDeviceCapture** folder:
 
     ```bash
-    cd ~/DP-160T00A-Migrating-your-Database-to-Cosmos-DB/MongoDeviceDataCapture/MongoDeviceDataCapture
+    cd ~/migration-workshop-apps/MongoDeviceDataCapture/MongoDeviceDataCapture
     ```
 
 1. Use the **Code** editor to examine the **TemperatureDevice.cs** file:
@@ -502,10 +502,10 @@ The final step is to reconfigure your existing MongoDB applications to connect t
     - Username
     - Primary Password
   
-1. Return to the Cloud Shell window (reconnect if the session has timed out), and move to the **DP-160T00A-Migrating-your-Database-to-Cosmos-DB/MongoDeviceDataCapture/DeviceDataQuery** folder:
+1. Return to the Cloud Shell window (reconnect if the session has timed out), and move to the **migration-workshop-apps/MongoDeviceDataCapture/DeviceDataQuery** folder:
 
     ```bash
-    cd ~/DP-160T00A-Migrating-your-Database-to-Cosmos-DB/MongoDeviceDataCapture/DeviceDataQuery
+    cd ~/migration-workshop-apps/MongoDeviceDataCapture/DeviceDataQuery
     ```
 
 1. Open the App.config file in the Code editor:
