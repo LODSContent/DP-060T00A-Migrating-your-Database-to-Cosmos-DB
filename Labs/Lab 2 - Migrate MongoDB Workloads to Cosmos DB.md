@@ -27,7 +27,7 @@ The lab runs using the Azure Cloud shell and the Azure portal.
 
 ## Exercise 1: Setup
 
-In the first exercise, you'll create the MongoDB database for holding the data captured from the temperature devices.
+In the first exercise, you'll create the MongoDB database for holding the data captured from temperature devices that your company manufactures.
 
 ### Task 1: Create a Resource Group and Virtual Network
 
