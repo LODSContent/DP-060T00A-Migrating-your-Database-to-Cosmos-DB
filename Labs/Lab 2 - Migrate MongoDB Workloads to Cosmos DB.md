@@ -55,7 +55,7 @@ In the first exercise, you'll create the MongoDB database for holding the data c
     | Region | Select the same location that you specified for the resource group |
 
 1. Select **Next: IP Addresses**
-1. On the **IP Addresses** page, select the default subnet, and then select **Delete**.
+1. On the **IP Addresses** page, under **IPv4 address space**, select the **10.0.0.0/16** space, and then to the right select the **Delete** button.
 1. In the **IPv4 address space** list, enter **10.0.0.0/24**.
 1. Select **+ Add subnet**. In the **Add subnet** pane, set the **Subnet name** to **default**, set the **Subnet address range** to **10.0.0.0/28**, and then select **Add**.
 1. On the **IP Addresses** page, select **Next: Security**.
@@ -66,8 +66,8 @@ In the first exercise, you'll create the MongoDB database for holding the data c
 
 1. In the hamburger menu of the Azure portal, select **+ Create a resource**.
 1. In the **Search the Marketplace** box, type **Ubuntu**, and then press Enter.
-1. On the **Marketplace** page, select **Ubuntu Server 20.04 LTS**.
-1. On the **Ubuntu Server 20.04 LTS** page, select **Create**.
+1. On the **Marketplace** page, select **Ubuntu Server 18.04 LTS**. 
+1. On the **Ubuntu Server 18.04 LTS** page, select **Create**.
 1. On the **Create a virtual machine** page, enter the following details:
 
     | Property  | Value  |
@@ -77,8 +77,8 @@ In the first exercise, you'll create the MongoDB database for holding the data c
     | Virtual machine name | mongodbserver | 
     | Region | Select the same location that you specified for the resource group |
     | Availability options | No infrastructure redundancy required |
-    | Image | Ubuntu Server 20.04 LTS - Gen1 |
-    | Azure Spot instance | No |
+    | Image | Ubuntu Server 18.04 LTS - Gen1 |
+    | Azure Spot instance | Unchecked |
     | Size | Standard A1_v2 |
     | Authentication type | Password |
     | Username | azureuser |
@@ -88,7 +88,7 @@ In the first exercise, you'll create the MongoDB database for holding the data c
     | Select inbound ports | SSH (22) |
 
 1. Select **Next: Disks \>**.
-1. On the **Disks** page, accept the default settings, and then select **Next: Networking \>**.
+1. On the **Disks** page, leave the settings at their default, and then select **Next: Networking \>**.
 1. On the **Networking** page, enter the following details:
 
     | Property  | Value  |
@@ -98,11 +98,10 @@ In the first exercise, you'll create the MongoDB database for holding the data c
     | Public IP | (new) mongodbserver-ip |
     | NIC network security group | Advanced |
     | Configure network security group | (new) mongodbserver-nsg |
-    | Accelerated networking | Off |
-    | Load balancing | No |
+    | Accelerated networking | Unchecked |
+    | Load balancing | Unchecked |
 
-1. Select **Next: Management \>**
-1. On the **Management** page, accept the default settings, and then select **Review + create \>**.
+1. Select **Review + create \>**.
 1. On the validation page, select **Create**.
 1. Wait for the virtual machine to be deployed before continuing
 1. In hamburger menu of the Azure portal, select **All resources**.
@@ -141,22 +140,24 @@ In the first exercise, you'll create the MongoDB database for holding the data c
 
 1. At the prompt, type **yes** to continue connecting.
 1. Enter the password **Pa55w.rdPa55w.rd**.
-1. To import the MongoDB public GPG key, enter this command:
+1. To import the MongoDB public GPG key, enter this command. The command should return **OK**:
 
     ```bash
-    wget -qO - https://www.mongodb.org/static/pgp/server-4.4.asc | sudo apt-key add -
+    wget -qO - https://www.mongodb.org/static/pgp/server-4.0.asc | sudo apt-key add -
     ```
 
 1. To create a list of packages, enter this command:
 
     ```bash
-    echo "deb [ arch=amd64,arm64 ] https://repo.mongodb.org/apt/ubuntu focal/mongodb-org/4.4 multiverse" | sudo tee /etc/apt/sources.list.d/mongodb-org-4.4.list
+    echo "deb [ arch=amd64,arm64 ] https://repo.mongodb.org/apt/ubuntu bionic/mongodb-org/4.0 multiverse" | sudo tee /etc/apt/sources.list.d/mongodb-org-4.0.list
     ```
+
+    The command should return text similar to `deb [ arch=amd64,arm64 ] https://repo.mongodb.org/apt/ubuntu focal/mongodb-org/4.0 multiverse`. This indicates that the package list has been successfully created.
 
 1. To reload the package database, enter this command:
 
     ```bash
-    sudo apt-get 
+    sudo apt-get update
     ```
 
 1. To install MongoDB, enter this command:
@@ -164,8 +165,7 @@ In the first exercise, you'll create the MongoDB database for holding the data c
     ```bash
     sudo apt-get install -y mongodb-org
     ```
-
-    It can take a few minutes for the installation to complete.
+    The installation should proceed with messages about installing, preparing, and unpacking packages. It can take a few minutes for the installation to complete.
 
 ### Task 4: Configure the MongoDB database
 
@@ -186,7 +186,13 @@ By default, the Mongo DB instance is configured to run without authentication. I
     ```
 
 1. To save the configuration file, press <kbd>Esc</kbd> and then press <kbd>CTRL + X</kbd>. Press <kbd>y</kbd> and then <kbd>Enter</kbd> to save the modified buffer.
-1. Run the following command to connect to the MongoDB service:
+1. To restart the MongoDB service and apply your changes, enter this command:
+
+    ```bash
+    sudo service mongod restart
+    ```
+
+1. To connect to the MongoDB service, enter this command:
 
     ```bash
     mongo
@@ -194,8 +200,8 @@ By default, the Mongo DB instance is configured to run without authentication. I
 
 1. At the **>** prompt, run the following commands. These commands create a new user named **administrator** that has administrative and monitoring rights over the database server:
 
-    ```mongosh
-    use admin
+    ```bash
+    use admin;
     db.createUser(
         {
             user: "administrator",
@@ -206,12 +212,19 @@ By default, the Mongo DB instance is configured to run without authentication. I
                 "readWriteAnyDatabase"
             ]
         }
-    )
+    );
+    exit;
     ```
 
-1. Run the following commands to create another user named **deviceadmin** for a database named **DeviceData**. After running the `db.shutdownserver();` command you will receive some errors which you can ignore:
+1. To connect to MongoDB with the new administrator's account, run this command:
 
-    ```mongosh
+    ```bash
+    mongo -u "administrator" -p "Pa55w.rd"
+    ```
+
+1. Run the following commands to create another user named **deviceadmin** for a database named **DeviceData**:
+
+    ```bash
     use DeviceData;
     db.createUser(
         {
@@ -220,8 +233,6 @@ By default, the Mongo DB instance is configured to run without authentication. I
             roles: [ { role: "readWrite", db: "DeviceData" } ]
         }
     );
-    use admin;
-    db.shutdownServer();
     exit;
     ```
 
@@ -239,7 +250,7 @@ By default, the Mongo DB instance is configured to run without authentication. I
 
 1. At the **>** prompt, run the following command to quit the mongo shell:
 
-    ```mongosh
+    ```bash
     exit;
     ```
 
@@ -275,7 +286,7 @@ You have now created a MongoDB server and database. The next step is to demonstr
 
     The code in this file contains a class named **TemperatureDevice** that simulates a temperature device capturing data and saving it in a MongoDB database. It uses the MongoDB library for the .NET Framework. The  **TemperatureDevice** constructor connects to the database using settings stored in the application configuration file. The **RecordTemperatures** method generates a reading and writes it to the database.
 
-1. Close the code editor, and then open the **ThermometerReading.cs** file:
+1. To close the code editor press <kbd>CTRL + Q</kbd>, and then open the **ThermometerReading.cs** file:
 
    ```bash
    code ThermometerReading.cs
@@ -288,19 +299,28 @@ You have now created a MongoDB server and database. The next step is to demonstr
     - The temperature recorded by the device.
     - The date and time when the temperature was recorded.
   
-1. Close the code editor, and then open the **App.config** file:
+1. To close the code editor press <kbd>CTRL + Q</kbd>, and then open the **App.config** file:
 
     ```bash
     code App.config
     ```
 
-    This file contains the settings for connecting to the MongoDB database. Set the value for the **Address** key to the IP address of the MongoDB server that you recorded earlier, and then save the file and close the editor.
+    This file contains the settings for connecting to the MongoDB database. Set the value for the **Address** key to the IP address of the MongoDB server that you recorded earlier.
 
+1. To save the file, press <kbd>CTRL + S</kbd>, and the to close the code editor press <kbd>CTRL + Q</kbd>
+1. To open the project file, enter this command:
+
+    ```bash
+    code MongoDeviceDataCapture.csproj
+    ```
+
+1. Check that the `<TargetFramework>` tags contain the value `netcoreapp3.1`. Replace this value if necessary.
+1. To save the file, press <kbd>CTRL + S</kbd>, and the to close the code editor press <kbd>CTRL + Q</kbd>
 1. Run the following command to rebuild the application:
 
     ```bash
     dotnet build
-    ````
+    ```
 
 1. Run the application:
 
@@ -310,7 +330,7 @@ You have now created a MongoDB server and database. The next step is to demonstr
 
     The application simulates 100 devices running simultaneously. Allow the application to run for a couple of minutes, and then press Enter to stop it.
 
-### Task 2: Build and Run Another App to Query the MongoDB Database
+### Task 2: Build and run another app to query the MongoDB database
 
 1. Move to the **migration-workshop-apps/MongoDeviceDataCapture/DeviceDataQuery** folder:
 
@@ -334,13 +354,23 @@ You have now created a MongoDB server and database. The next step is to demonstr
     - The highest reading.
     - The latest reading.
 
-1. Close the code editor, and then open the **App.config** file:
+1. To close the code editor press <kbd>CTRL + Q</kbd>, and then open the **App.config** file:
 
     ```bash
     code App.config
     ```
 
-    As before, set the value for the **Address** key to the IP address of the MongoDB server that you recorded earlier, and then save the file and close the editor.
+    As before, set the value for the **Address** key to the IP address of the MongoDB server that you recorded earlier.
+
+1. To save the file, press <kbd>CTRL + S</kbd>, and the to close the code editor press <kbd>CTRL + Q</kbd>
+1. To open the project file, enter this command:
+
+    ```bash
+    code DeviceDataQuery.csproj
+    ```
+
+1. Check that the `<TargetFramework>` tags contain the value `netcoreapp3.1`. Replace this value if necessary.
+1. To save the file, press <kbd>CTRL + S</kbd>, and the to close the code editor press <kbd>CTRL + Q</kbd>
 
 1. Build and run the application:
 
@@ -349,7 +379,7 @@ You have now created a MongoDB server and database. The next step is to demonstr
     dotnet run
     ```
 
-1. At the **Enter Device Number** prompt, enter a value between 0 and 99. The application will query the database, calculate the statistics, and display the results. Press **Q** to quit the application.
+1. At the **Enter Device Number** prompt, enter a value between 0 and 99. The application will query the database, calculate the statistics, and display the results. Press <kbd>Q + Enter</kbd> to quit the application.
 
 ## Exercise 3: Migrate the MongoDB Database to Cosmos DB
 
@@ -359,9 +389,9 @@ The next step is to take the MongoDB database and transfer it to Cosmos DB.
 
 1. Return to the Azure portal.
 1. In the hamburger menu, select **+ Create a resource**.
-1. On the **New** page, in the **Search the Marketplace** box, type ***Azure Cosmos DB**, end then press Enter.
+1. On the **New** page, in the **Search the Marketplace** box, type **Azure Cosmos DB**, end then press Enter.
 1. On the **Azure Cosmos DB** page, select **Create**.
-1. On the **Create Azure Cosmos DB Account** page, enter the following settings, and then select **Review + create**:
+1. On the **Create Azure Cosmos DB Account** page, enter the following settings:
 
     | Property  | Value  |
     |---|---|
@@ -379,23 +409,26 @@ The next step is to take the MongoDB database and transfer it to Cosmos DB.
     | Multi-region Writes | Disable |
     | Availability Zones | Disable |
 
+1. Select **Review + create**
 1. On the validation page, select **Create**, and wait for the Cosmos DB account to be deployed.
 1. In the hamburger menu of the Azure portal, select **All resources**, and then select your new Cosmos DB account (**mongodb*nnn***).
 1. On the **mongodb*nnn*** page, select **Data Explorer**.
 1. In the **Data Explorer** pane, select **New Collection**.
-1. In the **Add Collection** pane, specify the following settings, and then select **OK**:
+1. In the **Add Collection** pane, specify the following settings:
 
     | Property  | Value  |
     |---|---|
     | Database id | Select **Create new**, and then type **DeviceData** |
-    | Provision database throughput | selected |
+    | Provision database throughput | Checked |
     | Throughput | 1000 |
     | Collection id | Temperatures |
     | Storage capacity | Unlimited |
     | Shard key | deviceID |
-    | My shard key is larger than 100 bytes | leave de-selected |
-    | Create a Wildcard Index on all fields | leave de-selected |
+    | My shard key is larger than 100 bytes | unchecked |
+    | Create a Wildcard Index on all fields | unchecked |
     | Analytical store | Off |
+
+1. Select **OK**.
 
 ### Task 2: Create the Database Migration Service
 
@@ -404,11 +437,11 @@ The next step is to take the MongoDB database and transfer it to Cosmos DB.
 1. On the **Subscriptions** page, select your subscription.
 1. On your subscription page, under **Settings**, select **Resource providers**.
 1. In the **Filter by name** box, type **DataMigration**, and then select **Microsoft.DataMigration**.
-1. Select **Register**, and wait for the **Status** to change to **Registered**. It might be necessary to select **Refresh** to see the status change.
+1. If the **Status** is not **Resgistered**, select **Register**, and wait for the **Status** to change to **Registered**. It might be necessary to select **Refresh** to see the status change.
 1. In the hamburger menu of the Azure portal, select **+ Create a resource**.
 1. On the **New** page, in the **Search the Marketplace** box, type **Azure Database Migration Service**, and then press Enter.
 1. On the **Azure Database Migration Service** page, select **Create**.
-1. On the **Create Migration Service** page, enter the following settings, and then select **Next: Networking**:
+1. On the **Create Migration Service** page, enter the following settings:
 
     | Property  | Value  |
     |---|---|
@@ -419,7 +452,8 @@ The next step is to take the MongoDB database and transfer it to Cosmos DB.
     | Service mode | Azure |
     | Pricing Tier | Standard: 1 vCores |
 
-1. On the **Networking** page, select **databasevnet/default**,  **Review + create**
+1. Select **Next: Networking**.
+1. On the **Networking** page, check the **databasevnet/default** checkbox, and then select **Review + create**
 1. Select **Create**, and wait for the service to be deployed before continuing. This operation will take a few minutes.
 
 ### Task 3: Create and Run a New Migration Project
@@ -428,7 +462,7 @@ The next step is to take the MongoDB database and transfer it to Cosmos DB.
 1. In the **Resource groups** window, select **mongodbrg**.
 1. In the **mongodbrg** window, select **MongoDBMigration**.
 1. On the **MongoDBMigration** page, select **+ New Migration Project**.
-1. On the **New migration project** page, enter the following settings, and the select **Create and run activity**:
+1. On the **New migration project** page, enter the following settings:
 
     | Property  | Value  |
     |---|---|
@@ -437,7 +471,8 @@ The next step is to take the MongoDB database and transfer it to Cosmos DB.
     | Target server type | Cosmos DB (MongoDB API) |
     | Choose type of activity | Offline data migration |
 
-1. When the **Migration Wizard** starts, on the **Source details** page, enter the following details, and then select **Next: Select target**:
+1. Select **Create and run activity**.
+1. When the **Migration Wizard** starts, on the **Source details** page, enter the following details:
 
     | Property  | Value  |
     |---|---|
@@ -446,27 +481,30 @@ The next step is to take the MongoDB database and transfer it to Cosmos DB.
     | Server port | 27017 |
     | User Name | administrator |
     | Password | Pa55w.rd |
-    | Require SSL | de-selected |
+    | Require SSL | unchecked |
 
-1. On the **Select target** page, enter the following details, and then select **Next: Database setting**:
+1. Select **Next: Select target**.
+1. On the **Select target** page, enter the following details:
 
     | Property  | Value  |
     |---|---|
     | Mode | Select Cosmos DB target |
     | Subscription | Select your subscription |
-    | Select Comos DB name | mongodb*nnn* |
+    | Select Cosmos DB name | mongodb*nnn* |
     | Connection string | Accept the connection string generated for your Cosmos DB account |
 
-1. On the **Database setting** page, enter the following details, and then select **Next: Collection setting**:
+1. Select **Next: Database setting**.
+1. On the **Database setting** page, enter the following details:
 
     | Property  | Value  |
     |---|---|
     | Source Database | DeviceData |
     | Target Database | DeviceData |
     | Throughput (RU/s) | 1000 |
-    | Clean up collections | Clear this box |
+    | Clean up collections | Unchecked |
 
-1. On the **Collection setting** page, select the dropdown arrow by the DeviceData database, enter the following details, and then select **Next: Migration summary**:
+1. Select **Next: Collection setting**.
+1. On the **Collection setting** page, select the dropdown arrow by the DeviceData database, enter the following details:
 
     | Property  | Value  |
     |---|---|
@@ -476,6 +514,7 @@ The next step is to take the MongoDB database and transfer it to Cosmos DB.
     | Shard Key | deviceID |
     | Unique | Leave blank |
 
+1. Select **Next: Migration summary**
 1. On the **Migration summary** page, in the **Activity name** field, enter **mongodb-migration**, and then select **Start migration**.
 1. On the **mongodb-migration** page, select **Refresh** every 30 seconds, until the migration has completed. Note the number of documents processed.
 
