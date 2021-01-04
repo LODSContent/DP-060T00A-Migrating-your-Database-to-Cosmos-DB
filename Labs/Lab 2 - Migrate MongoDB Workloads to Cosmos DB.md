@@ -165,6 +165,7 @@ In the first exercise, you'll create the MongoDB database for holding the data c
     ```bash
     sudo apt-get install -y mongodb-org
     ```
+
     The installation should proceed with messages about installing, preparing, and unpacking packages. It can take a few minutes for the installation to complete.
 
 ### Task 4: Configure the MongoDB database
@@ -177,7 +178,7 @@ By default, the Mongo DB instance is configured to run without authentication. I
     sudo nano /etc/mongod.conf
     ```
 
-1. In the file, locate the **blindIp** setting, and set it to **0.0.0.0**.
+1. In the file, locate the **bindIp** setting, and set it to **0.0.0.0**.
 1. Add the following setting:
 
     ```bash
@@ -437,7 +438,7 @@ The next step is to take the MongoDB database and transfer it to Cosmos DB.
 1. On the **Subscriptions** page, select your subscription.
 1. On your subscription page, under **Settings**, select **Resource providers**.
 1. In the **Filter by name** box, type **DataMigration**, and then select **Microsoft.DataMigration**.
-1. If the **Status** is not **Resgistered**, select **Register**, and wait for the **Status** to change to **Registered**. It might be necessary to select **Refresh** to see the status change.
+1. If the **Status** is not **Registered**, select **Register**, and wait for the **Status** to change to **Registered**. It might be necessary to select **Refresh** to see the status change.
 1. In the hamburger menu of the Azure portal, select **+ Create a resource**.
 1. On the **New** page, in the **Search the Marketplace** box, type **Azure Database Migration Service**, and then press Enter.
 1. On the **Azure Database Migration Service** page, select **Create**.

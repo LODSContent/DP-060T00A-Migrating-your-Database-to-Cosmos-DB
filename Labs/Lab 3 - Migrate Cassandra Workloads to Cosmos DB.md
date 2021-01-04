@@ -452,7 +452,7 @@ In this exercise, you'll migrate the same data used previously, but this time yo
 
 ### Task 2: Create a Notebook for Migrating Data
 
-1. In the pane to the left, select **Clusters**, select the **Libraries** tab, and then select **Install New**.
+1. In the pane to the left, select **Clusters**, select the **MigrationCluster**, select the **Libraries** tab, and then select **Install New**.
 1. In the **Install Library** dialog, enter the following settings:
 
     | Property  | Value  |
@@ -463,7 +463,7 @@ In this exercise, you'll migrate the same data used previously, but this time yo
     | Exclusions | Leave blank |
 
 1. Select **Install**. This library contains the classes for connecting to Cassandra from Spark.
-1. When the connector library is installed, select **Install Library**.
+1. When the connector library is installed, select **Install New** to install another library.
 1. In the **Install Library** dialog, enter the following settings:
 
     | Property  | Value  |
