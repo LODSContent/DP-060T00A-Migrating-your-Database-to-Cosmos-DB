@@ -179,7 +179,7 @@ By default, the Mongo DB instance is configured to run without authentication. I
     ```
 
 1. In the file, locate the **bindIp** setting, and set it to **0.0.0.0**.
-1. Add the following setting:
+1. Add the following setting. If there is already a `security` section, replace it with this code. Otherwise add the code on two new lines:
 
     ```bash
     security:
@@ -199,10 +199,15 @@ By default, the Mongo DB instance is configured to run without authentication. I
     mongo
     ```
 
-1. At the **>** prompt, run the following commands. These commands create a new user named **administrator** that has administrative and monitoring rights over the database server:
+1. At the **>** prompt, to switch to the **admin** database, run this command:
 
     ```bash
     use admin;
+    ```
+
+1. To create a new user named **administrator**, run the following command. You can enter the command on one line or across multiple lines for better readability. The command is executed when the `mongo` program reaches the semicolon:
+
+    ```bash
     db.createUser(
         {
             user: "administrator",
@@ -214,6 +219,11 @@ By default, the Mongo DB instance is configured to run without authentication. I
             ]
         }
     );
+    ```
+
+1. To exit the `mongo` program, enter this command;
+
+    ```bash
     exit;
     ```
 
@@ -223,10 +233,15 @@ By default, the Mongo DB instance is configured to run without authentication. I
     mongo -u "administrator" -p "Pa55w.rd"
     ```
 
-1. Run the following commands to create another user named **deviceadmin** for a database named **DeviceData**:
+1. To switch to the **DeviceData** database, execute this command:
 
     ```bash
-    use DeviceData;
+    use DeviceData;    
+    ```
+
+1. To create a user named **deviceadmin**, which the app will use to connect to the database, run this command:
+
+    ```bash
     db.createUser(
         {
             user: "deviceadmin",
@@ -234,6 +249,11 @@ By default, the Mongo DB instance is configured to run without authentication. I
             roles: [ { role: "readWrite", db: "DeviceData" } ]
         }
     );
+    ```
+
+1. To exit the `mongo` program, enter this command;
+
+    ```bash
     exit;
     ```
 

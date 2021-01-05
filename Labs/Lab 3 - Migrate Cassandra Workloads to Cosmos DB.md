@@ -447,6 +447,9 @@ In this exercise, you'll migrate the same data used previously, but this time yo
     | Worker Type | Leave the settings at their default |
     | Driver Type | Same as worker |
 
+    > [!NOTE]
+    > When you select the runtime version, ensure you select the version without GPU support, otherwise you will receive an incompatibility error message.
+
 1. Select **Create Cluster**.
 1. Wait for the cluster to be created; the state of the **MigrationCluster** is reported as **Running** when the cluster is ready. This process will take several minutes.
 
