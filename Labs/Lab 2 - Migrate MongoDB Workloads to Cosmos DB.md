@@ -59,7 +59,7 @@ In the first exercise, you'll create the MongoDB database for holding the data c
 1. In the **IPv4 address space** list, enter **10.0.0.0/24**.
 1. Select **+ Add subnet**. In the **Add subnet** pane, set the **Subnet name** to **default**, set the **Subnet address range** to **10.0.0.0/28**, and then select **Add**.
 1. On the **IP Addresses** page, select **Next: Security**.
-1. On the **Security** page, verify that **DDoS Protection Standard** is set to **Disable**, and **Firewall** is set to **Disable**. Select **Review * create**.
+1. On the **Security** page, verify that **DDoS Protection Standard** is set to **Disable**, and **Firewall** is set to **Disable**. Select **Review + create**.
 1. On the **Create virtual network** page, select **Create**. Wait for the virtual network to be created before continuing.
 
 ### Task 2: Create a MongoDB Database Server
@@ -660,11 +660,7 @@ The final step is to reconfigure your existing MongoDB applications to connect t
         // Credential settings for CosmosDB Mongo API
         //
 
-        UseSsl = true,
-        SslSettings = new SslSettings
-        {
-            EnabledSslProtocols = SslProtocols.Tls12
-        },
+        UseTls = true,
         Credential = new MongoCredential("SCRAM-SHA-1", new MongoInternalIdentity(database, azureLogin.UserName), new PasswordEvidence(azureLogin.SecurePassword))
 
         // End of Mongo API settings 
@@ -672,7 +668,7 @@ The final step is to reconfigure your existing MongoDB applications to connect t
 
     ```
 
-    These changes are necessary because the original MongoDB database was not using an SSL connection. Cosmos DB always uses SSL.
+    These changes are necessary because the original MongoDB database was not using a TLS connection. Cosmos DB always uses TLS.
 
 1. Save the file, and then close the Code editor.
 1. Rebuild and run the application:
